@@ -1550,7 +1550,10 @@
             var dy = e.clientY - pStartY;
             var adx = Math.abs(dx), ady = Math.abs(dy);
             if (!pMode && Math.max(adx, ady) > 5) {
-              pMode = (pCard && ady >= adx * 0.6) ? "pull" : "browse";
+              var tr = pCard ? fanCards[pCardIdx].rot * Math.PI / 180 : 0;
+              var along = dx * Math.sin(tr) + dy * Math.cos(tr);
+              var across = dx * Math.cos(tr) - dy * Math.sin(tr);
+              pMode = (pCard && along > 0 && along >= Math.abs(across) * 0.6) ? "pull" : "browse";
               if (pMode === "browse" && pCard) { pCard.classList.remove("pulling"); pCard.style.zIndex = ""; }
             }
             if (pMode === "browse") {
@@ -1562,13 +1565,12 @@
               var idx = cardIndexAtPoint(e.clientX, e.clientY);
               if (idx >= 0) setHover(idx);
             } else if (pMode === "pull" && pCard) {
-              var dd0 = Math.sqrt(dx * dx + dy * dy);
-              var k = dd0 > 240 ? 240 / dd0 : 1;
-              pullDist = Math.min(dd0, 240);
+              var th = fanCards[pCardIdx].rot * Math.PI / 180;
+              var proj = dx * Math.sin(th) + dy * Math.cos(th);
+              pullDist = Math.max(0, Math.min(240, proj));
               pCard.classList.add("pulling");
               pCard.style.zIndex = "90";
-              pCard.style.transform = "translate(" + (dx * k).toFixed(0) + "px, " + (dy * k).toFixed(0) + "px) " +
-                poseFor(-fanCards[pCardIdx].rot, 0, 1 + Math.min(pullDist, 150) / 600);
+              pCard.style.transform = poseFor(-fanCards[pCardIdx].rot, pullDist, 1 + Math.min(pullDist, 150) / 600);
             }
             return;
           }
