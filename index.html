@@ -1406,7 +1406,7 @@
               c.el.classList.remove("hot");
               return;
             }
-            if (!c.el.classList.contains("pulling")) {
+            if (!(pId !== null && c.el === pCard)) {
               c.el.style.transform = fanPose(c);
               c.el.style.opacity = "1";
             }
@@ -1576,7 +1576,12 @@
           pCardIdx = -1;
           pullDist = 0;
           fanEl.classList.remove("dragging");
-          if (card) card.classList.remove("hot");
+          // 按下時被標成 pulling 的牌，放手後一律釋放（點到別張牌時
+          // 原本會卡在 pulling，之後 layoutFan／refan 都不動它 → 缺口、誤判）
+          if (card && mode !== "pull") {
+            card.classList.remove("pulling", "hot");
+            card.style.zIndex = "";
+          }
           if ((!e || e.type === "pointerup") && (mode !== "pull" || pulled < 16) && Math.abs(rdx) < 24 && Math.abs(rdy) < 24) {
             // 輕點選牌（含手指微微滑動被誤判成 browse 的情況）：在放手時
             // 用座標直接選，不靠按鈕的 click——按下時 hover 會換 z-index，
@@ -1585,6 +1590,8 @@
             var tapIdx = e ? cardIndexAtPoint(e.clientX, e.clientY) : -1;
             var tapCard = tapIdx >= 0 ? fanCards[tapIdx].el : (pStrict ? card : null);
             if (tapCard) {
+              if (card) { card.classList.remove("pulling", "hot"); card.style.zIndex = ""; }
+              layoutFan();
               if (mode === "browse") { fanRot = 0; applyFanRot(true); }
               pickCard(tapCard);
               suppressPick = true;
