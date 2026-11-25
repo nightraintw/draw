@@ -213,8 +213,8 @@
           linear-gradient(155deg, var(--back-1), var(--back-2));
         box-shadow:
           inset 0 0 0 1.5px #fff,
-          0 2px 0 var(--back-edge-1),
-          0 4px 0 var(--back-edge-2),
+          0 1px 0 var(--back-edge-1),
+          0 2px 0 var(--back-edge-2),
           0 12px 20px -6px rgba(30, 80, 140, 0.28);
         transform-origin: 50% 120%;
         animation: hero-deal 0.9s var(--ease-spring) both;
@@ -223,7 +223,7 @@
       .hero-fan i:nth-child(2) { --r: 0deg; animation-delay: 0.25s; z-index: 2; }
       .hero-fan i:nth-child(3) { --r: 18deg; animation-delay: 0.35s; }
       .hero-fan i:nth-child(2) {
-        box-shadow: inset 0 0 0 1.5px var(--gold-hi), 0 2px 0 var(--paper-edge), 0 4px 0 var(--back-edge-2), 0 14px 22px -6px rgba(30, 80, 140, 0.28);
+        box-shadow: inset 0 0 0 1.5px var(--gold-hi), 0 1px 0 var(--paper-edge), 0 2px 0 var(--back-edge-2), 0 14px 22px -6px rgba(30, 80, 140, 0.28);
       }
       .hero-fan i:nth-child(2)::after {
         content: "";
@@ -533,9 +533,8 @@
           linear-gradient(155deg, var(--back-1), var(--back-2));
         box-shadow:
           inset 0 0 0 1.5px #fff,
-          0 2px 0 var(--back-edge-1),
-          0 4px 0 var(--back-edge-2),
-          0 6px 0 var(--back-edge-3),
+          0 1px 0 var(--back-edge-1),
+          0 2px 0 var(--back-edge-2),
           0 18px 28px -6px rgba(30, 80, 140, 0.28);
       }
       .deck span:nth-child(1) { transform: translate(-5px, 6px) rotate(-5deg); }
@@ -577,9 +576,8 @@
         box-shadow:
           inset 0 0 0 1.5px #fff,
           inset 0 1px 0 rgba(255, 255, 255, 0.12),
-          0 2px 0 var(--back-edge-1),
-          0 4px 0 var(--back-edge-2),
-          0 6px 0 var(--back-edge-3),
+          0 1px 0 var(--back-edge-1),
+          0 2px 0 var(--back-edge-2),
           0 20px 30px -8px rgba(30, 80, 140, 0.30);
         color: #fff;
         transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
@@ -626,10 +624,10 @@
         box-shadow:
           inset 0 0 0 1.5px #fff,
           inset 0 1px 0 rgba(255, 255, 255, 0.5),
-          0 2px 0 var(--back-edge-1),
-          0 4px 0 var(--back-edge-2),
-          0 6px 0 var(--back-edge-3),
-          0 8px 0 #2f6a9c,
+          0 1px 0 var(--back-edge-1),
+          0 2px 0 var(--back-edge-2),
+          0 3px 0 var(--back-edge-3),
+          0 4px 0 #2f6a9c,
           0 30px 44px -8px rgba(30, 80, 140, 0.32),
           0 0 36px rgba(70, 160, 240, 0.35);
       }
@@ -843,6 +841,50 @@
       }
       .btn-next.show { visibility: visible; opacity: 1; translate: 0 0; pointer-events: auto; }
 
+      /* 抽中特效 */
+      .fx {
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 3;
+        pointer-events: none;
+        will-change: transform, opacity;
+      }
+      .fx.spark {
+        width: 10px;
+        height: 10px;
+        margin: -5px 0 0 -5px;
+        background: #fff;
+        clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+        filter: drop-shadow(0 0 4px rgba(90, 175, 255, 0.9));
+      }
+      .fx.conf {
+        width: 9px;
+        height: 14px;
+        margin: -7px 0 0 -4px;
+        border-radius: 2px;
+      }
+      .fx.glow {
+        width: 340px;
+        height: 340px;
+        margin: -170px 0 0 -170px;
+        border-radius: 50%;
+        background: radial-gradient(closest-side, rgba(255, 255, 255, 0.95), rgba(120, 190, 255, 0.45) 55%, transparent);
+        z-index: 0;
+      }
+      .fx.beams {
+        width: 520px;
+        height: 520px;
+        margin: -260px 0 0 -260px;
+        border-radius: 50%;
+        z-index: 0;
+        background: repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.28) 0 6deg, transparent 6deg 24deg);
+        -webkit-mask-image: radial-gradient(closest-side, #000 20%, transparent 100%);
+        mask-image: radial-gradient(closest-side, #000 20%, transparent 100%);
+      }
+      .reveal-col { position: relative; z-index: 2; }
+      .stage-fx { position: absolute; inset: 0; z-index: 16; pointer-events: none; overflow: hidden; }
+
       /* 進度 */
       .progress {
         position: relative;
@@ -988,6 +1030,8 @@
         </div>
       </div>
 
+      <div class="stage-fx" id="stageFx"></div>
+
       <div class="finish-bar" id="finishBar">
         <button class="btn-pdf btn-3d" id="pdfBtn" type="button">下載 PDF</button>
         <button class="btn-again btn-3d paper" id="againBtn" type="button">再抽一次</button>
@@ -1038,7 +1082,7 @@
         // 大卡厚度：用多片實心切片沿 Z 軸疊出一道連續的厚邊，
         // 靠近卡背的切片偏紅、靠近正面偏米白，側面看得到明暗
         (function buildCore() {
-          var THICK = 10, STEP = 0.5;
+          var THICK = 4, STEP = 0.5;
           var old = bigInnerEl.querySelector(".big-core");
           if (old) old.remove();
           bigInnerEl.style.setProperty("--half", (THICK / 2) + "px");
@@ -1091,6 +1135,7 @@
           });
           var prevCount = countLine.textContent;
           countLine.textContent = names.length ? String(names.length) : "";
+          persist();
           if (prevCount !== countLine.textContent && chipsAnimated) {
             countLine.classList.remove("bump");
             void countLine.offsetWidth;
@@ -1120,6 +1165,7 @@
         }
         firstSelect.addEventListener("change", function () {
           firstPick = firstSelect.value;
+          persist();
         });
 
         function addName(v) {
@@ -1168,6 +1214,8 @@
         });
 
         function backToSetup() {
+          roundActive = false;
+          persist();
           finishBarEl.classList.remove("on");
           revealEl.classList.remove("on");
           nextBtnEl.classList.remove("show");
@@ -1214,6 +1262,8 @@
           currentIdx = 0;
           flippedCount = 0;
           revealPairs = [];
+          roundActive = true;
+          persist();
           finishBarEl.classList.remove("on");
           revealEl.classList.remove("on");
           nextBtnEl.classList.remove("show");
@@ -1571,11 +1621,100 @@
         }
 
         /* ---------- 翻牌特效：金光衝擊環 ---------- */
+        /* ---------- 抽中特效 ---------- */
+        var FX_COLORS = ["#ffffff", "#9ad4ff", "#5eb3f7", "#c9e7ff", "#2b7fd0", "#ffd978"];
+        function cardCenter(host) {
+          var h = host.getBoundingClientRect();
+          var b = bigCardEl.getBoundingClientRect();
+          return { x: b.left + b.width / 2 - h.left, y: b.top + b.height / 2 - h.top };
+        }
+        function fxEl(host, cls, x, y) {
+          var e = document.createElement("i");
+          e.className = "fx " + cls;
+          e.style.left = x + "px";
+          e.style.top = y + "px";
+          host.appendChild(e);
+          return e;
+        }
+        function sparkBurst(n, dist) {
+          if (reducedMotion || !bigCardEl.animate) return;
+          var c = cardCenter(revealEl);
+          for (var i = 0; i < n; i++) {
+            var e = fxEl(revealEl, "spark", c.x, c.y);
+            var a = (i / n) * Math.PI * 2 + Math.random() * 0.4;
+            var d = dist * (0.55 + Math.random() * 0.6);
+            var sc = 0.6 + Math.random() * 1.1;
+            e.animate([
+              { transform: "translate(0,0) scale(0) rotate(0deg)", opacity: 1 },
+              { transform: "translate(" + (Math.cos(a) * d * 0.7).toFixed(0) + "px," + (Math.sin(a) * d * 0.7).toFixed(0) + "px) scale(" + sc.toFixed(2) + ") rotate(90deg)", opacity: 1, offset: 0.45 },
+              { transform: "translate(" + (Math.cos(a) * d).toFixed(0) + "px," + (Math.sin(a) * d).toFixed(0) + "px) scale(0) rotate(200deg)", opacity: 0 }
+            ], { duration: 700 + Math.random() * 400, easing: "cubic-bezier(0.2, 0.7, 0.3, 1)", fill: "forwards" }).onfinish = (function (el) { return function () { el.remove(); }; })(e);
+          }
+        }
+        function glowPulse(strong) {
+          if (reducedMotion || !bigCardEl.animate) return;
+          var c = cardCenter(revealEl);
+          var g = fxEl(revealEl, "glow", c.x, c.y);
+          g.animate([
+            { transform: "scale(0.4)", opacity: 0 },
+            { transform: "scale(1.15)", opacity: strong ? 0.95 : 0.6, offset: 0.35 },
+            { transform: "scale(1.5)", opacity: 0 }
+          ], { duration: 900, easing: "ease-out", fill: "forwards" }).onfinish = function () { g.remove(); };
+          if (strong) {
+            var bm = fxEl(revealEl, "beams", c.x, c.y);
+            bm.animate([
+              { transform: "rotate(0deg) scale(0.5)", opacity: 0 },
+              { transform: "rotate(35deg) scale(1)", opacity: 1, offset: 0.3 },
+              { transform: "rotate(90deg) scale(1.15)", opacity: 0 }
+            ], { duration: 1400, easing: "ease-out", fill: "forwards" }).onfinish = function () { bm.remove(); };
+          }
+        }
+        function confetti(host, n, fromTop) {
+          if (reducedMotion || !bigCardEl.animate) return;
+          var hr = host.getBoundingClientRect();
+          var c = fromTop ? { x: hr.width / 2, y: -10 } : cardCenter(host);
+          for (var i = 0; i < n; i++) {
+            var e = fxEl(host, "conf", c.x, c.y);
+            e.style.background = FX_COLORS[i % FX_COLORS.length];
+            var vx = fromTop ? (Math.random() - 0.5) * hr.width * 1.1 : (Math.random() - 0.5) * 460;
+            var up = fromTop ? 40 : -(120 + Math.random() * 220);
+            var fall = fromTop ? hr.height * (0.6 + Math.random() * 0.5) : 260 + Math.random() * 260;
+            var rot = (Math.random() - 0.5) * 1080;
+            e.animate([
+              { transform: "translate(0,0) rotate(0deg)", opacity: 1 },
+              { transform: "translate(" + (vx * 0.55).toFixed(0) + "px," + up.toFixed(0) + "px) rotate(" + (rot * 0.4).toFixed(0) + "deg)", opacity: 1, offset: fromTop ? 0.2 : 0.35 },
+              { transform: "translate(" + vx.toFixed(0) + "px," + fall.toFixed(0) + "px) rotate(" + rot.toFixed(0) + "deg)", opacity: 0.9 }
+            ], { duration: 1500 + Math.random() * 1100, delay: Math.random() * (fromTop ? 500 : 120), easing: "cubic-bezier(0.25, 0.6, 0.4, 1)", fill: "both" }).onfinish = (function (el) { return function () { el.remove(); }; })(e);
+          }
+        }
+
+        /* ---------- 本機儲存：重新整理後還原 ---------- */
+        var resuming = false;
+        var STORE_KEY = "gift-draw-v1";
+        var roundActive = false;
+        function persist() {
+          try {
+            localStorage.setItem(STORE_KEY, JSON.stringify({
+              names: names,
+              firstPick: firstPick,
+              round: roundActive ? { drawOrder: drawOrder, assignment: assignment, currentIdx: currentIdx, revealPairs: revealPairs } : null
+            }));
+          } catch (e) {}
+        }
+        function loadSaved() {
+          try {
+            var raw = localStorage.getItem(STORE_KEY);
+            return raw ? JSON.parse(raw) : null;
+          } catch (e) { return null; }
+        }
+
         function fireRing() {
           if (!ringEl) return;
           ringEl.classList.remove("go");
           void ringEl.offsetWidth;
           ringEl.classList.add("go");
+          glowPulse(false);
+          sparkBurst(14, 170);
         }
 
         function buildProgress() {
@@ -1664,6 +1803,9 @@
           if (revealed) return;
           revealed = true;
           nextBtnEl.classList.add("show");
+          glowPulse(true);
+          sparkBurst(22, 230);
+          confetti(revealEl, 34, false);
         }
 
         var fDrag = null;
@@ -1750,13 +1892,15 @@
           if (!reducedMotion && bigCardEl.animate) {
             bigCardEl.animate([
               { transform: "translate(" + dx.toFixed(0) + "px, " + dy.toFixed(0) + "px) rotate(" + rotC.toFixed(1) + "deg) scale(" + sc.toFixed(3) + ")", opacity: 0.92 },
+              { transform: "translate(" + (dx * 0.3).toFixed(0) + "px, " + (dy * 0.3 - 70).toFixed(0) + "px) rotate(" + (rotC * -0.4 + 10).toFixed(1) + "deg) scale(" + (sc + (1 - sc) * 0.55).toFixed(3) + ")", opacity: 1, offset: 0.5 },
+              { transform: "translate(0px, 0px) rotate(-4deg) scale(1.12)", opacity: 1, offset: 0.82 },
               { transform: "translate(0px, 0px) rotate(0deg) scale(1)", opacity: 1 }
-            ], { duration: 720, easing: "cubic-bezier(0.25, 1.1, 0.35, 1)", fill: "backwards" });
+            ], { duration: 900, easing: "cubic-bezier(0.3, 0.9, 0.35, 1)", fill: "backwards" });
           }
-          setTimeout(function () { fireRing(); }, reducedMotion ? 40 : 430);
+          setTimeout(function () { fireRing(); }, reducedMotion ? 40 : 640);
           setTimeout(function () {
             flipLive = true;
-          }, reducedMotion ? 80 : 760);
+          }, reducedMotion ? 80 : 900);
         }
 
         nextBtnEl.addEventListener("click", function () {
@@ -1790,6 +1934,7 @@
             suppressPick = false;
             busy = false;
             layoutFan();
+            persist();
             if (currentIdx >= drawOrder.length) {
               finishRound();
             } else {
@@ -1813,6 +1958,7 @@
           turnNameEl.classList.add("swap");
           markProgress();
           setTimeout(function () { finishBarEl.classList.add("on"); }, reducedMotion ? 60 : 650);
+          if (!resuming) confetti(document.getElementById("stageFx"), 70, true);
         }
 
         document.getElementById("againBtn").addEventListener("click", function () {
@@ -1983,7 +2129,45 @@
           }, 250);
         });
 
-        renderChips();
+        var hadSaved = !!loadSaved();
+        if (!hadSaved) renderChips();
+
+        // 重新整理後：還原名單、順序，以及進行到一半的抽獎
+        (function restore() {
+          var saved = loadSaved();
+          if (!saved) return;
+          if (Array.isArray(saved.names) && saved.names.length) names = saved.names.map(String);
+          if (typeof saved.firstPick === "string") firstPick = saved.firstPick;
+          renderChips();
+          var r = saved.round;
+          if (!r || !Array.isArray(r.drawOrder) || r.drawOrder.length < 3 || !r.assignment) return;
+          if (r.drawOrder.some(function (n) { return names.indexOf(n) === -1; }) || r.drawOrder.length !== names.length) return;
+          drawOrder = r.drawOrder;
+          assignment = r.assignment;
+          currentIdx = Math.max(0, Math.min(r.currentIdx | 0, drawOrder.length));
+          flippedCount = currentIdx;
+          revealPairs = Array.isArray(r.revealPairs) ? r.revealPairs.slice(0, currentIdx) : [];
+          roundActive = true;
+          setupView.hidden = true;
+          stageView.hidden = false;
+          buildFan();
+          for (var i = 0; i < currentIdx; i++) fanCards[i].el.classList.add("used");
+          refan();
+          buildProgress();
+          layoutFan();
+          if (deckEl) deckEl.classList.add("gone");
+          fanEl.classList.remove("dealing");
+          busy = false;
+          if (currentIdx >= drawOrder.length) {
+            resuming = true;
+            finishRound();
+            resuming = false;
+          } else {
+            ready = true;
+            fanEl.classList.add("ready");
+            updateTurn();
+          }
+        })();
       })();
     </script>
   </body>
