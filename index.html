@@ -1873,7 +1873,7 @@
           if (Math.abs(n - 180) <= 1) {
             if (!bigCardEl.classList.contains("flipped")) {
               bigCardEl.classList.add("flipped");
-              if (animate) setTimeout(onRevealed, Math.round((dur || 550) * 0.8));
+              if (animate) setTimeout(onRevealed, Math.round((dur || 550) * 1.0));
               else onRevealed();
             }
           } else if (n <= 1 || n >= 359) {
@@ -1898,7 +1898,7 @@
           revealed = true;
           nextBtnEl.classList.add("show");
           glowPulse(true);
-          sparkBurst(22, 230);
+          sparkBurst(14, 230);
         }
 
         var fDrag = null;
