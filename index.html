@@ -1406,7 +1406,7 @@
               c.el.classList.remove("hot");
               return;
             }
-            if (!(pId !== null && c.el === pCard)) {
+            if (!(pId !== null && pMode === "pull" && c.el === pCard)) {
               c.el.style.transform = fanPose(c);
               c.el.style.opacity = "1";
             }
@@ -1525,6 +1525,7 @@
 
         var pId = null, pStartX = 0, pStartY = 0, pMode = "";
         var pCard = null, pCardIdx = -1, pullDist = 0, pStartRot = 0, pStrict = false;
+        var pAx = 0, pAy = 0, pLockPull = false;
         fanEl.addEventListener("pointerdown", function (e) {
           if (!ready || busy || pId !== null) return;
           if (e.pointerType === "mouse" && e.button !== 0) return;
@@ -1543,13 +1544,45 @@
             pCard.style.zIndex = "90";
           }
           // 按下就進入拉牌：不等位移門檻、不重排扇形，手指一動牌就跟
-          if (pCard) pMode = "pull";
+          pAx = e.clientX; pAy = e.clientY; pLockPull = false;
+          if (pCard) { pMode = "pull"; hoverIdx = pCardIdx; }
         });
         window.addEventListener("pointermove", function (e) {
           if (pId !== null && e.pointerId === pId) {
             var dx = e.clientX - pStartX;
             var dy = e.clientY - pStartY;
             // 沒有「橫掃轉扇形」了：按到牌，手指往外一動就是拉這張牌
+            // 扇形滑動選牌：手指沿扇面橫向掃，亮起的牌跟著手指換；
+            // 往外一拉就拉出目前亮著的那張
+            if (pCard && !pLockPull) {
+              var tr = fanCards[pCardIdx].rot * Math.PI / 180;
+              var ax = e.clientX - pAx, ay = e.clientY - pAy;
+              var along = ax * Math.sin(tr) + ay * Math.cos(tr);
+              var across = ax * Math.cos(tr) - ay * Math.sin(tr);
+              if (pMode === "pull" && pullDist < 30 && Math.abs(across) > 10 && Math.abs(across) > along * 1.2) {
+                pMode = "sweep";
+                pCard.classList.remove("pulling");
+                pCard.style.zIndex = "";
+                pAx = e.clientX; pAy = e.clientY;
+              } else if (pMode === "sweep" && along > 18 && along > Math.abs(across) * 1.2) {
+                pMode = "pull"; pLockPull = true;
+                pStartX = pAx; pStartY = pAy;
+                pCard.classList.add("pulling");
+                pCard.style.zIndex = "90";
+                dx = e.clientX - pStartX; dy = e.clientY - pStartY;
+              }
+            }
+            if (pMode === "sweep") {
+              var si = cardIndexLoose(e.clientX, e.clientY);
+              if (si >= 0 && si !== pCardIdx) {
+                pCardIdx = si;
+                pCard = fanCards[si].el;
+                hoverIdx = si;
+                pAx = e.clientX; pAy = e.clientY;
+                layoutFan();
+              }
+              return;
+            }
             if (pMode === "pull" && pCard) {
               var th = fanCards[pCardIdx].rot * Math.PI / 180;
               var proj = dx * Math.sin(th) + dy * Math.cos(th);
@@ -1581,6 +1614,18 @@
           if (card && mode !== "pull") {
             card.classList.remove("pulling", "hot");
             card.style.zIndex = "";
+          }
+          if (mode === "sweep" && card) {
+            hoverIdx = -1;
+            card.classList.remove("hot", "pulling");
+            card.style.zIndex = "";
+            layoutFan();
+            if (e && e.type === "pointerup") {
+              pickCard(card);
+              suppressPick = true;
+              setTimeout(function () { suppressPick = false; }, 300);
+            }
+            return;
           }
           if ((!e || e.type === "pointerup") && (mode !== "pull" || pulled < 16) && Math.abs(rdx) < 24 && Math.abs(rdy) < 24) {
             // 輕點選牌（含手指微微滑動被誤判成 browse 的情況）：在放手時
