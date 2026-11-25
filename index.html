@@ -658,9 +658,7 @@
         justify-content: center;
         background:
           radial-gradient(520px 520px at 50% 50%, rgba(70, 160, 240, 0.14), transparent 70%),
-          rgba(30, 70, 120, 0.42);
-        -webkit-backdrop-filter: blur(8px) saturate(1.2);
-        backdrop-filter: blur(8px) saturate(1.2);
+          rgba(36, 78, 128, 0.62);
       }
       .reveal.on { display: flex; animation: veil-in 0.4s ease both; }
       @keyframes veil-in {
@@ -830,8 +828,8 @@
       }
       .big-card.flipped .big-target { animation: name-pop 0.65s 0.4s var(--ease-spring) both; }
       @keyframes name-pop {
-        from { transform: scale(0.8) translateY(10px); opacity: 0; filter: blur(6px); }
-        to { transform: scale(1) translateY(0); opacity: 1; filter: blur(0); }
+        from { transform: scale(0.8) translateY(10px); opacity: 0; }
+        to { transform: scale(1) translateY(0); opacity: 1; }
       }
       .big-face.front .emblem {
         margin-top: 18px;
@@ -875,7 +873,7 @@
         margin: -5px 0 0 -5px;
         background: #fff;
         clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
-        filter: drop-shadow(0 0 4px rgba(90, 175, 255, 0.9));
+        box-shadow: none;
       }
       .fx.conf {
         width: 9px;
@@ -1101,7 +1099,7 @@
         // 大卡厚度：用多片實心切片沿 Z 軸疊出一道連續的厚邊，
         // 靠近卡背的切片偏紅、靠近正面偏米白，側面看得到明暗
         (function buildCore() {
-          var THICK = 4, STEP = 0.5;
+          var THICK = 4, STEP = 1;
           var old = bigInnerEl.querySelector(".big-core");
           if (old) old.remove();
           bigInnerEl.style.setProperty("--half", (THICK / 2) + "px");
@@ -1799,7 +1797,8 @@
           if (Math.abs(n - 180) <= 1) {
             if (!bigCardEl.classList.contains("flipped")) {
               bigCardEl.classList.add("flipped");
-              onRevealed();
+              if (animate) setTimeout(onRevealed, Math.round((dur || 550) * 0.8));
+              else onRevealed();
             }
           } else if (n <= 1 || n >= 359) {
             bigCardEl.classList.remove("flipped");
@@ -1827,9 +1826,11 @@
         }
 
         var fDrag = null;
+        var flipRaf = 0, pendingFlip = null;
         bigCardEl.addEventListener("pointerdown", function (e) {
           if (!flipLive) return;
           e.preventDefault();
+          bigCardEl.classList.remove("held");
           if (flipNormTimer) { clearTimeout(flipNormTimer); flipNormTimer = null; }
           try { bigCardEl.setPointerCapture(e.pointerId); } catch (err) {}
           fDrag = { id: e.pointerId, x: e.clientX, start: flipAngle, moved: false };
@@ -1839,12 +1840,22 @@
           if (!fDrag || e.pointerId !== fDrag.id) return;
           var dx = e.clientX - fDrag.x;
           if (Math.abs(dx) > 5) fDrag.moved = true;
-          if (fDrag.moved) setFlip(fDrag.start + dx * 0.55, false);
+          if (!fDrag.moved) return;
+          pendingFlip = fDrag.start + dx * 0.55;
+          if (!flipRaf) {
+            flipRaf = requestAnimationFrame(function () {
+              flipRaf = 0;
+              if (pendingFlip !== null && fDrag) setFlip(pendingFlip, false);
+              pendingFlip = null;
+            });
+          }
         });
         function endFlipDrag(e) {
           if (!fDrag || (e && e.pointerId !== fDrag.id)) return;
           var wasMoved = fDrag.moved;
           var startA = fDrag.start;
+          if (flipRaf) { cancelAnimationFrame(flipRaf); flipRaf = 0; }
+          pendingFlip = null;
           fDrag = null;
           if (!flipLive) return;
           if (!wasMoved) {
