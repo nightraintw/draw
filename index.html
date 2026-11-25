@@ -616,6 +616,7 @@
           opacity 0.3s ease;
       }
       .fan-card.pulling { transition: none !important; }
+      .fan-card.pulling .cardface { transition: none; }
       .fan.ready .fan-card:not(.used):focus-visible { outline: none; }
       .fan-card.hot .cardface,
       .fan.ready .fan-card:not(.used):focus-visible .cardface {
@@ -1556,8 +1557,9 @@
               var idx = cardIndexAtPoint(e.clientX, e.clientY);
               if (idx >= 0) setHover(idx);
             } else if (pMode === "pull" && pCard) {
-              var dd = Math.sqrt(dx * dx + dy * dy);
-              var k = dd > 240 ? 240 / dd : 1;
+              var dd0 = Math.sqrt(dx * dx + dy * dy);
+              var dd = Math.max(0, dd0 - 14);
+              var k = dd0 > 0 ? Math.min(dd, 240) / dd0 : 0;
               pullDist = Math.min(dd, 240);
               pCard.classList.add("pulling");
               pCard.style.zIndex = "90";
@@ -1935,11 +1937,13 @@
           nextBtnEl.classList.remove("show");
           nextBtnEl.textContent = currentIdx >= drawOrder.length ? "完成" : "下一位";
           var fromRect = card.getBoundingClientRect();
-          // 這張離場後，剩下的牌立刻依剩餘張數重排成完整扇形
+          // 抽中的那一刻只讓這張牌離場；其餘牌先不動（同時移動幾十張
+          // 帶陰影的牌會讓手機掉幀），等「下一位」收起遮罩時再補齊扇形
           hoverIdx = -1;
           fDrag = null;
-          refan();
-          layoutFan();
+          card.classList.remove("hot", "pulling");
+          card.style.transition = "none";
+          card.style.opacity = "0";
           revealEl.classList.add("on");
           var bigRect = bigCardEl.getBoundingClientRect();
           var dx = (fromRect.left + fromRect.width / 2) - (bigRect.left + bigRect.width / 2);
@@ -1985,6 +1989,7 @@
           flippedCount--;
           currentIdx--;
           lp.card.classList.remove("used");
+          lp.card.style.transition = "";
           lp.card.setAttribute("aria-label", "一張牌");
           refan();
           layoutFan();
@@ -2052,6 +2057,7 @@
             pullDist = 0;
             suppressPick = false;
             busy = false;
+            refan();
             layoutFan();
             persist();
             if (currentIdx >= drawOrder.length) {
