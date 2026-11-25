@@ -23,20 +23,22 @@
         --line: rgba(255, 255, 255, 0.07);
         --line-strong: rgba(255, 255, 255, 0.14);
 
-        --accent: #ff5a3c;
-        --accent-hi: #ff7a5c;
-        --accent-edge: #b8321c;
-        --accent-glow: rgba(255, 90, 60, 0.35);
+        --accent: #c9a227;
+        --accent-hi: #ecd27a;
+        --accent-edge: #7a6016;
+        --accent-glow: rgba(201, 162, 39, 0.35);
 
         --paper: #f6efe2;
         --paper-edge: #d9cbb1;
         --paper-ink: #1c1a1f;
 
-        --back-1: #f2553a;
-        --back-2: #c93a22;
-        --back-edge-1: #a52c18;
-        --back-edge-2: #8a2313;
-        --back-edge-3: #6f1c0f;
+        --gold: #c9a227;
+        --gold-hi: #ecd27a;
+        --back-1: #25252a;
+        --back-2: #0b0b0d;
+        --back-edge-1: #9a7b1c;
+        --back-edge-2: #7a6016;
+        --back-edge-3: #574410;
 
         --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
         --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
@@ -61,7 +63,7 @@
       /* 背景：柔光 + 點陣 */
       .dot-bg {
         background:
-          radial-gradient(900px 600px at 12% -10%, rgba(255, 90, 60, 0.13), transparent 60%),
+          radial-gradient(900px 600px at 12% -10%, rgba(201, 162, 39, 0.13), transparent 60%),
           radial-gradient(800px 600px at 100% 110%, rgba(120, 92, 255, 0.10), transparent 60%),
           var(--bg);
       }
@@ -82,7 +84,7 @@
         border: none;
         border-radius: 14px;
         font-weight: 800;
-        color: #fff;
+        color: #171204;
         background: linear-gradient(180deg, var(--accent-hi), var(--accent));
         box-shadow:
           inset 0 1px 0 rgba(255, 255, 255, 0.35),
@@ -210,8 +212,7 @@
           repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.07) 0 2px, transparent 2px 7px),
           linear-gradient(155deg, var(--back-1), var(--back-2));
         box-shadow:
-          inset 0 0 0 3px rgba(255, 239, 220, 0.0),
-          inset 0 0 0 4px rgba(255, 239, 220, 0.45),
+          inset 0 0 0 1px rgba(201, 162, 39, 0.8),
           0 2px 0 var(--back-edge-1),
           0 4px 0 var(--back-edge-2),
           0 12px 20px -6px rgba(0, 0, 0, 0.7);
@@ -222,8 +223,7 @@
       .hero-fan i:nth-child(2) { --r: 0deg; animation-delay: 0.25s; z-index: 2; }
       .hero-fan i:nth-child(3) { --r: 18deg; animation-delay: 0.35s; }
       .hero-fan i:nth-child(2) {
-        background: linear-gradient(180deg, #fffaf1, var(--paper));
-        box-shadow: 0 2px 0 var(--paper-edge), 0 4px 0 #bfae90, 0 14px 22px -6px rgba(0, 0, 0, 0.7);
+        box-shadow: inset 0 0 0 1px var(--gold-hi), 0 2px 0 var(--back-edge-1), 0 4px 0 var(--back-edge-2), 0 14px 22px -6px rgba(0, 0, 0, 0.7);
       }
       .hero-fan i:nth-child(2)::after {
         content: "";
@@ -233,7 +233,7 @@
         width: 18px;
         height: 18px;
         margin: -9px 0 0 -9px;
-        background: var(--accent);
+        background: var(--gold);
         clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
       }
       @keyframes hero-deal {
@@ -271,9 +271,9 @@
         letter-spacing: 0;
         font-variant-numeric: tabular-nums;
         color: var(--accent-hi);
-        background: rgba(255, 90, 60, 0.12);
+        background: rgba(201, 162, 39, 0.12);
         border-radius: 999px;
-        box-shadow: inset 0 0 0 1px rgba(255, 90, 60, 0.25);
+        box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.25);
         transition: transform 0.3s var(--ease-spring);
       }
       .count:empty { display: none; }
@@ -304,8 +304,8 @@
         background: #121218;
         box-shadow:
           inset 0 2px 4px rgba(0, 0, 0, 0.5),
-          inset 0 0 0 1px rgba(255, 90, 60, 0.6),
-          0 0 0 4px rgba(255, 90, 60, 0.14);
+          inset 0 0 0 1px rgba(201, 162, 39, 0.6),
+          0 0 0 4px rgba(201, 162, 39, 0.14);
       }
       .add-row input { flex: 1; min-height: 52px; padding: 0 16px; }
       .btn-add { min-height: 52px; padding: 0 22px; font-size: 16px; }
@@ -353,7 +353,7 @@
         transition: color 0.2s ease, background 0.2s ease;
       }
       @media (hover: hover) {
-        .chip button:hover { color: var(--accent-hi); background: rgba(255, 90, 60, 0.1); }
+        .chip button:hover { color: var(--accent-hi); background: rgba(201, 162, 39, 0.1); }
       }
       .chip button:active { color: #fff; background: rgba(255, 255, 255, 0.1); }
       .chips-empty { display: none; }
@@ -495,7 +495,7 @@
         height: min(70vw, 460px);
         transform: translate(-50%, -50%);
         border-radius: 50%;
-        background: radial-gradient(closest-side, rgba(255, 90, 60, 0.12), transparent);
+        background: radial-gradient(closest-side, rgba(201, 162, 39, 0.10), transparent);
         filter: blur(10px);
         pointer-events: none;
       }
@@ -532,8 +532,7 @@
           repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.06) 0 2px, transparent 2px 8px),
           linear-gradient(155deg, var(--back-1), var(--back-2));
         box-shadow:
-          inset 0 0 0 5px transparent,
-          inset 0 0 0 6px rgba(255, 239, 220, 0.4),
+          inset 0 0 0 1px rgba(201, 162, 39, 0.8),
           0 2px 0 var(--back-edge-1),
           0 4px 0 var(--back-edge-2),
           0 6px 0 var(--back-edge-3),
@@ -572,17 +571,17 @@
         justify-content: center;
         overflow: hidden;
         background:
-          radial-gradient(120% 80% at 30% 0%, rgba(255, 255, 255, 0.22), transparent 55%),
-          repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.06) 0 2px, transparent 2px 8px),
+          radial-gradient(120% 80% at 30% 0%, rgba(255, 244, 205, 0.10), transparent 55%),
+          repeating-linear-gradient(45deg, rgba(201, 162, 39, 0.05) 0 2px, transparent 2px 8px),
           linear-gradient(160deg, var(--back-1), var(--back-2));
         box-shadow:
-          inset 0 1px 0 rgba(255, 255, 255, 0.35),
-          inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+          inset 0 0 0 1px rgba(201, 162, 39, 0.85),
+          inset 0 1px 0 rgba(255, 255, 255, 0.12),
           0 2px 0 var(--back-edge-1),
           0 4px 0 var(--back-edge-2),
           0 6px 0 var(--back-edge-3),
           0 20px 30px -8px rgba(0, 0, 0, 0.75);
-        color: #fff1e0;
+        color: var(--gold);
         transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
         transition:
           transform 0.45s var(--ease-out),
@@ -602,7 +601,7 @@
         content: "";
         position: absolute;
         inset: 7px;
-        border: 1.5px solid rgba(255, 239, 220, 0.5);
+        border: 1px solid rgba(201, 162, 39, 0.3);
         border-radius: 8px;
         pointer-events: none;
       }
@@ -610,7 +609,7 @@
         width: 50%;
         max-width: 56px;
         height: auto;
-        filter: drop-shadow(0 1px 0 rgba(120, 25, 10, 0.5));
+        filter: none;
       }
       .fan.ready .fan-card:not(.used) { cursor: pointer; }
       .fan.ready .fan-card {
@@ -625,14 +624,14 @@
         transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1.06);
         filter: brightness(1.08) saturate(1.05);
         box-shadow:
-          inset 0 1px 0 rgba(255, 255, 255, 0.45),
-          inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+          inset 0 0 0 1px var(--gold-hi),
+          inset 0 1px 0 rgba(255, 255, 255, 0.2),
           0 2px 0 var(--back-edge-1),
           0 4px 0 var(--back-edge-2),
           0 6px 0 var(--back-edge-3),
-          0 8px 0 #561509,
+          0 8px 0 #3d2f0a,
           0 30px 44px -8px rgba(0, 0, 0, 0.8),
-          0 0 36px rgba(255, 90, 60, 0.35);
+          0 0 36px rgba(201, 162, 39, 0.35);
       }
       .fan-card.hot .cardface::before { animation: sheen-sweep 0.8s var(--ease-out) both; }
       @keyframes sheen-sweep {
@@ -660,7 +659,7 @@
         align-items: center;
         justify-content: center;
         background:
-          radial-gradient(520px 520px at 50% 50%, rgba(255, 90, 60, 0.14), transparent 70%),
+          radial-gradient(520px 520px at 50% 50%, rgba(201, 162, 39, 0.14), transparent 70%),
           rgba(6, 6, 9, 0.62);
         -webkit-backdrop-filter: blur(8px) saturate(1.2);
         backdrop-filter: blur(8px) saturate(1.2);
@@ -678,8 +677,8 @@
         height: 160px;
         margin: -80px 0 0 -80px;
         border-radius: 50%;
-        border: 1.5px solid rgba(255, 140, 110, 0.85);
-        box-shadow: 0 0 24px rgba(255, 90, 60, 0.35), inset 0 0 24px rgba(255, 90, 60, 0.25);
+        border: 1.5px solid rgba(236, 210, 122, 0.8);
+        box-shadow: 0 0 24px rgba(201, 162, 39, 0.3), inset 0 0 24px rgba(201, 162, 39, 0.2);
         opacity: 0;
         pointer-events: none;
       }
@@ -737,7 +736,7 @@
         position: absolute;
         inset: 0;
         border-radius: 20px;
-        background: var(--slice, #e4d7bf);
+        background: var(--slice, #7a6016);
         pointer-events: none;
       }
       .big-face {
@@ -757,38 +756,38 @@
       .big-face.back {
         transform: translateZ(var(--half, 5px));
         background:
-          radial-gradient(120% 70% at 25% 0%, rgba(255, 255, 255, 0.24), transparent 55%),
-          repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.06) 0 3px, transparent 3px 11px),
+          radial-gradient(120% 70% at 25% 0%, rgba(255, 244, 205, 0.10), transparent 55%),
+          repeating-linear-gradient(45deg, rgba(201, 162, 39, 0.05) 0 3px, transparent 3px 11px),
           linear-gradient(160deg, var(--back-1), var(--back-2));
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -2px 0 rgba(0, 0, 0, 0.15);
-        color: #fff1e0;
+        box-shadow: inset 0 0 0 1.5px var(--gold), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        color: var(--gold);
       }
       .big-face.back::after {
         content: "";
         position: absolute;
         inset: 12px;
-        border: 2px solid rgba(255, 239, 220, 0.5);
+        border: 1px solid rgba(201, 162, 39, 0.3);
         border-radius: 12px;
         pointer-events: none;
       }
       .big-face.back .emblem {
         width: 46%;
         height: auto;
-        filter: drop-shadow(0 2px 0 rgba(120, 25, 10, 0.5));
+        filter: none;
       }
       .big-face.front {
         transform: rotateY(180deg) translateZ(var(--half, 5px));
         background:
-          radial-gradient(120% 70% at 70% 0%, #fffdf8, transparent 60%),
-          linear-gradient(170deg, #fbf6ec, var(--paper));
-        color: var(--paper-ink);
-        box-shadow: inset 0 1px 0 #fff, inset 0 -2px 0 rgba(0, 0, 0, 0.06);
+          radial-gradient(120% 70% at 70% 0%, rgba(255, 244, 205, 0.10), transparent 60%),
+          linear-gradient(160deg, var(--back-1), var(--back-2));
+        color: var(--gold-hi);
+        box-shadow: inset 0 0 0 1.5px var(--gold), inset 0 1px 0 rgba(255, 255, 255, 0.12);
       }
       .big-face.front::before {
         content: "";
         position: absolute;
         inset: 12px;
-        border: 1.5px solid rgba(255, 90, 60, 0.35);
+        border: 1px solid rgba(201, 162, 39, 0.3);
         border-radius: 12px;
         pointer-events: none;
       }
@@ -796,8 +795,8 @@
         content: "";
         position: absolute;
         inset: 0;
-        background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.85) 50%, transparent 70%);
-        mix-blend-mode: soft-light;
+        background: linear-gradient(115deg, transparent 30%, rgba(255, 240, 200, 0.22) 50%, transparent 70%);
+        
         transform: translateX(-130%);
         pointer-events: none;
       }
@@ -808,7 +807,7 @@
         font-size: clamp(38px, 9.5vw, 58px);
         font-weight: 900;
         letter-spacing: 0.04em;
-        color: var(--paper-ink);
+        color: var(--gold-hi);
         line-height: 1.2;
         word-break: break-all;
       }
@@ -821,7 +820,7 @@
         margin-top: 18px;
         width: 36px;
         height: 36px;
-        color: var(--accent);
+        color: var(--gold);
       }
       .big-card.flipped .big-face.front .emblem { animation: name-pop 0.6s 0.55s var(--ease-spring) both; }
 
@@ -1049,7 +1048,7 @@
             s.className = "big-core";
             s.setAttribute("aria-hidden", "true");
             var t = (z + THICK / 2) / THICK; // 0 = 正面那側, 1 = 卡背那側
-            var col = t > 0.82 ? "#b3301b" : t > 0.72 ? "#cf6a4e" : (Math.round(z / STEP) % 2 ? "#e6d9c1" : "#dccdb2");
+            var col = (Math.round(z / STEP) % 2) ? "#8f7219" : "#7a6016";
             s.style.setProperty("--slice", col);
             s.style.transform = "translateZ(" + z.toFixed(2) + "px)";
             frag.appendChild(s);
