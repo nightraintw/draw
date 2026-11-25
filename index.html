@@ -1542,17 +1542,14 @@
             pCard.classList.add("pulling");
             pCard.style.zIndex = "90";
           }
-          if (pCardIdx >= 0) setHover(pCardIdx);
+          // 按下就進入拉牌：不等位移門檻、不重排扇形，手指一動牌就跟
+          if (pCard) pMode = "pull";
         });
         window.addEventListener("pointermove", function (e) {
           if (pId !== null && e.pointerId === pId) {
             var dx = e.clientX - pStartX;
             var dy = e.clientY - pStartY;
             // 沒有「橫掃轉扇形」了：按到牌，手指往外一動就是拉這張牌
-            if (!pMode && pCard) {
-              var tr = fanCards[pCardIdx].rot * Math.PI / 180;
-              if (dx * Math.sin(tr) + dy * Math.cos(tr) > 4) pMode = "pull";
-            }
             if (pMode === "pull" && pCard) {
               var th = fanCards[pCardIdx].rot * Math.PI / 180;
               var proj = dx * Math.sin(th) + dy * Math.cos(th);
