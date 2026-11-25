@@ -713,6 +713,25 @@
         pointer-events: none;
       }
       .big-card:active { cursor: grabbing; }
+      /* 拿在手上：輕輕漂浮，卡背掃過一道光，邀請你去翻 */
+      .big-card.held { animation: hold-float 3.4s ease-in-out infinite; }
+      @keyframes hold-float {
+        0%, 100% { transform: translateY(0) rotate(-0.8deg); }
+        50% { transform: translateY(-9px) rotate(0.8deg); }
+      }
+      .big-card.held:not(.flipped) .big-face.back::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(112deg, transparent 30%, rgba(255, 255, 255, 0.7) 50%, transparent 70%);
+        transform: translateX(-130%);
+        animation: hint-sweep 2.6s 0.6s ease-in-out infinite;
+        pointer-events: none;
+      }
+      @keyframes hint-sweep {
+        0% { transform: translateX(-130%); }
+        45%, 100% { transform: translateX(130%); }
+      }
       .big-inner {
         position: relative;
         width: 100%;
@@ -1869,6 +1888,7 @@
           markProgress();
           // 中央卡先歸零成卡背，量出扇形那張牌的位置再飛過去接住它
           bigCardEl.classList.remove("flipped");
+          bigCardEl.classList.remove("held");
           flipAngle = 0;
           revealed = false;
           flipLive = false;
@@ -1890,17 +1910,30 @@
           var sc = Math.max(0.2, fromRect.width / Math.max(1, bigRect.width));
           var rotC = idx >= 0 ? -fanCards[idx].rot : 0;
           if (!reducedMotion && bigCardEl.animate) {
+            // 像用手把牌抽出來：先從扇形裡沿著牌的方向抽高、放大，
+            // 再斜斜地劃過半空飛向中央（帶 3D 傾斜），落下時過衝、彈兩下才停穩
+            var th = idx >= 0 ? fanCards[idx].rot * Math.PI / 180 : 0;
+            var ox = Math.sin(th), oy = Math.cos(th);
+            var lift = Math.max(40, fromRect.height * 0.5);
+            var T = function (x, y, rz, scl, ry) {
+              return "translate(" + x.toFixed(0) + "px, " + y.toFixed(0) + "px) perspective(900px) rotateY(" + (ry || 0).toFixed(1) + "deg) rotate(" + rz.toFixed(1) + "deg) scale(" + scl.toFixed(3) + ")";
+            };
             bigCardEl.animate([
-              { transform: "translate(" + dx.toFixed(0) + "px, " + dy.toFixed(0) + "px) rotate(" + rotC.toFixed(1) + "deg) scale(" + sc.toFixed(3) + ")", opacity: 0.92 },
-              { transform: "translate(" + (dx * 0.3).toFixed(0) + "px, " + (dy * 0.3 - 70).toFixed(0) + "px) rotate(" + (rotC * -0.4 + 10).toFixed(1) + "deg) scale(" + (sc + (1 - sc) * 0.55).toFixed(3) + ")", opacity: 1, offset: 0.5 },
-              { transform: "translate(0px, 0px) rotate(-4deg) scale(1.12)", opacity: 1, offset: 0.82 },
-              { transform: "translate(0px, 0px) rotate(0deg) scale(1)", opacity: 1 }
-            ], { duration: 900, easing: "cubic-bezier(0.3, 0.9, 0.35, 1)", fill: "backwards" });
+              { transform: T(dx, dy, rotC, sc, 0), opacity: 1, offset: 0 },
+              { transform: T(dx + ox * lift, dy + oy * lift, rotC, sc * 1.28, 0), opacity: 1, offset: 0.2, easing: "cubic-bezier(0.3, 0, 0.2, 1)" },
+              { transform: T(dx + ox * lift, dy + oy * lift, rotC, sc * 1.28, 0), opacity: 1, offset: 0.27 },
+              { transform: T(dx * 0.35, dy * 0.35 - 80, rotC * -0.3 + 12, sc + (1 - sc) * 0.6, 28), opacity: 1, offset: 0.55, easing: "cubic-bezier(0.3, 0.8, 0.3, 1)" },
+              { transform: T(0, 0, -5, 1.2, -12), opacity: 1, offset: 0.76, easing: "ease-in-out" },
+              { transform: T(0, 6, 2.5, 0.95, 5), opacity: 1, offset: 0.88 },
+              { transform: T(0, -3, -1, 1.03, -2), opacity: 1, offset: 0.95 },
+              { transform: T(0, 0, 0, 1, 0), opacity: 1, offset: 1 }
+            ], { duration: 1500, easing: "linear", fill: "backwards" });
           }
-          setTimeout(function () { fireRing(); }, reducedMotion ? 40 : 640);
+          setTimeout(function () { fireRing(); }, reducedMotion ? 40 : 1050);
           setTimeout(function () {
             flipLive = true;
-          }, reducedMotion ? 80 : 900);
+          }, reducedMotion ? 80 : 1500);
+          setTimeout(function () { bigCardEl.classList.add("held"); }, reducedMotion ? 80 : 1500);
         }
 
         nextBtnEl.addEventListener("click", function () {
@@ -1908,6 +1941,7 @@
           flipLive = false;
           fDrag = null;
           nextBtnEl.classList.remove("show");
+          bigCardEl.classList.remove("held");
           if (!reducedMotion && bigCardEl.animate) {
             bigCardEl.animate([
               { opacity: 1, transform: "scale(1)" },
