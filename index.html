@@ -1539,7 +1539,7 @@
           pCardIdx = pStrict ? strictIdx : cardIndexLoose(e.clientX, e.clientY);
           pCard = pCardIdx >= 0 ? fanCards[pCardIdx].el : null;
           if (pCard) {
-            pCard.classList.add("pulling");
+            pCard.classList.add("pulling", "hot");
             pCard.style.zIndex = "90";
           }
           // 按下就進入拉牌：不等位移門檻、不重排扇形，手指一動牌就跟
@@ -1576,6 +1576,7 @@
           pCardIdx = -1;
           pullDist = 0;
           fanEl.classList.remove("dragging");
+          if (card) card.classList.remove("hot");
           if ((!e || e.type === "pointerup") && (mode !== "pull" || pulled < 16) && Math.abs(rdx) < 24 && Math.abs(rdy) < 24) {
             // 輕點選牌（含手指微微滑動被誤判成 browse 的情況）：在放手時
             // 用座標直接選，不靠按鈕的 click——按下時 hover 會換 z-index，
