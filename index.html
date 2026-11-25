@@ -1822,64 +1822,73 @@
 
         /* ---------- 交換順序 PDF ---------- */
         // 用 canvas 排版（中文字型直接畫）再組裝成 PDF 檔案下載，不需外部函式庫
-        function renderPdfPage(rows, pageNo, pageCount, dateStr) {
-          var W = 1190, H = 1684;
+        function renderPdfPage(rows, pageNo, pageCount, dateStr, meta) {
+          var W = 1190, H = 1684, M = 95, F = "'Noto Sans TC', sans-serif";
           var cv = document.createElement("canvas");
           cv.width = W;
           cv.height = H;
           var g = cv.getContext("2d");
           g.fillStyle = "#ffffff";
           g.fillRect(0, 0, W, H);
-          g.textAlign = "center";
-          g.fillStyle = "#2b7fd0";
-          g.font = "900 52px 'Noto Sans TC', sans-serif";
-          g.fillText("交換禮物抽獎", W / 2, 118);
-          g.fillStyle = "#221d12";
-          g.font = "700 34px 'Noto Sans TC', sans-serif";
-          g.fillText("交換順序", W / 2, 178);
-          g.strokeStyle = "#5eb3f7";
-          g.lineWidth = 4;
-          g.beginPath();
-          g.moveTo(90, 214);
-          g.lineTo(W - 90, 214);
-          g.stroke();
-          g.fillStyle = "#8a8a8a";
-          g.font = "400 24px 'Noto Sans TC', sans-serif";
-          g.fillText(dateStr, W / 2, 262);
-          var y = 356;
-          rows.forEach(function (r) {
-            g.beginPath();
-            g.arc(126, y - 12, 21, 0, Math.PI * 2);
-            g.fillStyle = "#5eb3f7";
-            g.fill();
-            g.fillStyle = "#ffffff";
-            g.font = "900 25px 'Noto Sans TC', sans-serif";
-            g.textAlign = "center";
-            g.fillText(String(r.no), 126, y - 3);
-            g.font = "700 36px 'Noto Sans TC', sans-serif";
-            g.fillStyle = "#221d12";
-            g.textAlign = "right";
-            g.fillText(r.from, 505, y);
-            g.fillStyle = "#b5b0a6";
-            g.textAlign = "center";
-            g.font = "900 38px 'Noto Sans TC', sans-serif";
-            g.fillText("→", W / 2, y);
-            g.fillStyle = "#2b7fd0";
-            g.textAlign = "left";
-            g.font = "700 36px 'Noto Sans TC', sans-serif";
-            g.fillText(r.to, 685, y);
-            g.strokeStyle = "#e8e2d2";
-            g.lineWidth = 2;
-            g.beginPath();
-            g.moveTo(90, y + 30);
-            g.lineTo(W - 90, y + 30);
-            g.stroke();
-            y += 62;
+          g.textBaseline = "alphabetic";
+          // 標題與副標
+          g.textAlign = "left";
+          g.fillStyle = "#111111";
+          g.font = "700 50px " + F;
+          g.fillText("交換禮物抽獎", M, 150);
+          g.fillStyle = "#777777";
+          g.font = "400 24px " + F;
+          g.fillText("抽獎日期 " + dateStr, M, 196);
+          // 摘要框
+          var by = 232, bh = 118, bw = W - M * 2;
+          g.strokeStyle = "#222222";
+          g.lineWidth = 3;
+          g.strokeRect(M, by, bw, bh);
+          var cols = [["參加人數", String(meta.total)], ["第一位", meta.first], ["最後一位", meta.last]];
+          cols.forEach(function (c, i) {
+            var x = M + 30 + i * (bw / 3);
+            g.fillStyle = "#666666";
+            g.font = "400 22px " + F;
+            g.fillText(c[0], x, by + 40);
+            g.fillStyle = "#111111";
+            g.font = "700 40px " + F;
+            g.fillText(c[1], x, by + 92);
           });
-          g.fillStyle = "#8a8a8a";
-          g.font = "400 22px 'Noto Sans TC', sans-serif";
+          // 表格
+          var y = 440;
+          g.fillStyle = "#111111";
+          g.font = "700 32px " + F;
+          g.fillText("抽獎順序", M, y);
+          g.fillStyle = "#222222";
+          g.fillRect(M, y + 14, W - M * 2, 3);
+          y += 66;
+          g.fillStyle = "#333333";
+          g.font = "700 22px " + F;
+          g.textAlign = "left";
+          g.fillText("順序", M, y);
+          g.fillText("抽的人", M + 190, y);
+          g.textAlign = "right";
+          g.fillText("抽到", W - M, y);
+          g.fillStyle = "#222222";
+          g.fillRect(M, y + 16, W - M * 2, 2);
+          y += 62;
+          rows.forEach(function (r) {
+            g.fillStyle = "#222222";
+            g.font = "400 26px " + F;
+            g.textAlign = "left";
+            g.fillText(String(r.no).padStart(2, "0"), M, y);
+            g.fillText(r.from, M + 190, y);
+            g.textAlign = "right";
+            g.font = "700 26px " + F;
+            g.fillText("→ " + r.to, W - M, y);
+            g.fillStyle = "#e4e4e4";
+            g.fillRect(M, y + 20, W - M * 2, 2);
+            y += 60;
+          });
+          g.fillStyle = "#999999";
+          g.font = "400 21px " + F;
           g.textAlign = "center";
-          g.fillText(pageNo + " / " + pageCount, W / 2, H - 56);
+          g.fillText("第 " + pageNo + " 頁 / 共 " + pageCount + " 頁", W / 2, H - 70);
           var b64 = cv.toDataURL("image/jpeg", 0.92).split(",")[1];
           var bin = atob(b64);
           var bytes = new Uint8Array(bin.length);
@@ -1928,21 +1937,23 @@
         document.getElementById("pdfBtn").addEventListener("click", function () {
           if (!revealPairs.length) return;
           var now = new Date();
-          var dateStr = now.getFullYear() + "/" + (now.getMonth() + 1) + "/" + now.getDate();
-          var perPage = 20;
+          function two(n) { return (n < 10 ? "0" : "") + n; }
+          var dateStr = now.getFullYear() + "-" + two(now.getMonth() + 1) + "-" + two(now.getDate());
+          var meta = { total: revealPairs.length, first: revealPairs[0].from, last: revealPairs[revealPairs.length - 1].from };
+          var perPage = 17;
           var pageCount = Math.ceil(revealPairs.length / perPage);
           var images = [];
           for (var p = 0; p < pageCount; p++) {
             var rows = revealPairs.slice(p * perPage, (p + 1) * perPage).map(function (pair, j) {
               return { no: p * perPage + j + 1, from: pair.from, to: pair.to };
             });
-            images.push(renderPdfPage(rows, p + 1, pageCount, dateStr));
+            images.push(renderPdfPage(rows, p + 1, pageCount, dateStr, meta));
           }
           var blob = assemblePdf(images);
           var url = URL.createObjectURL(blob);
           var a = document.createElement("a");
           a.href = url;
-          a.download = "交換禮物順序.pdf";
+          a.download = "交換禮物抽獎-" + dateStr + ".pdf";
           document.body.appendChild(a);
           a.click();
           a.remove();
