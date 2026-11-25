@@ -1538,6 +1538,10 @@
           pStrict = strictIdx >= 0;
           pCardIdx = pStrict ? strictIdx : cardIndexLoose(e.clientX, e.clientY);
           pCard = pCardIdx >= 0 ? fanCards[pCardIdx].el : null;
+          if (pCard) {
+            pCard.classList.add("pulling");
+            pCard.style.zIndex = "90";
+          }
           if (pCardIdx >= 0) setHover(pCardIdx);
         });
         window.addEventListener("pointermove", function (e) {
@@ -1545,8 +1549,9 @@
             var dx = e.clientX - pStartX;
             var dy = e.clientY - pStartY;
             var adx = Math.abs(dx), ady = Math.abs(dy);
-            if (!pMode && Math.max(adx, ady) > 14) {
+            if (!pMode && Math.max(adx, ady) > 5) {
               pMode = (pCard && ady >= adx * 0.6) ? "pull" : "browse";
+              if (pMode === "browse" && pCard) { pCard.classList.remove("pulling"); pCard.style.zIndex = ""; }
             }
             if (pMode === "browse") {
               fanEl.classList.add("dragging");
@@ -1558,9 +1563,8 @@
               if (idx >= 0) setHover(idx);
             } else if (pMode === "pull" && pCard) {
               var dd0 = Math.sqrt(dx * dx + dy * dy);
-              var dd = Math.max(0, dd0 - 14);
-              var k = dd0 > 0 ? Math.min(dd, 240) / dd0 : 0;
-              pullDist = Math.min(dd, 240);
+              var k = dd0 > 240 ? 240 / dd0 : 1;
+              pullDist = Math.min(dd0, 240);
               pCard.classList.add("pulling");
               pCard.style.zIndex = "90";
               pCard.style.transform = "translate(" + (dx * k).toFixed(0) + "px, " + (dy * k).toFixed(0) + "px) " +
@@ -1602,7 +1606,7 @@
           if (mode === "pull" && card) {
             card.classList.remove("pulling");
             void card.offsetWidth;
-            if (pulled > 90) {
+            if (pulled > 80) {
               pickCard(card);
               suppressPick = true;
               setTimeout(function () { suppressPick = false; }, 250);
@@ -1619,6 +1623,10 @@
             setTimeout(function () { suppressPick = false; }, 200);
             fanRot = 0;
             applyFanRot(true);
+          }
+          if (card && !card.classList.contains("used")) {
+            card.classList.remove("pulling");
+            if (mode !== "pull") card.style.zIndex = "";
           }
         }
         window.addEventListener("pointerup", endPointer);
