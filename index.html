@@ -1548,23 +1548,12 @@
           if (pId !== null && e.pointerId === pId) {
             var dx = e.clientX - pStartX;
             var dy = e.clientY - pStartY;
-            var adx = Math.abs(dx), ady = Math.abs(dy);
-            if (!pMode && Math.max(adx, ady) > 5) {
-              var tr = pCard ? fanCards[pCardIdx].rot * Math.PI / 180 : 0;
-              var along = dx * Math.sin(tr) + dy * Math.cos(tr);
-              var across = dx * Math.cos(tr) - dy * Math.sin(tr);
-              pMode = (pCard && along > 0 && along >= Math.abs(across) * 0.6) ? "pull" : "browse";
-              if (pMode === "browse" && pCard) { pCard.classList.remove("pulling"); pCard.style.zIndex = ""; }
+            // 沒有「橫掃轉扇形」了：按到牌，手指往外一動就是拉這張牌
+            if (!pMode && pCard) {
+              var tr = fanCards[pCardIdx].rot * Math.PI / 180;
+              if (dx * Math.sin(tr) + dy * Math.cos(tr) > 4) pMode = "pull";
             }
-            if (pMode === "browse") {
-              fanEl.classList.add("dragging");
-              // 手指往右拖，牌尖要跟著往右：垂放扇面的 CSS 旋轉方向與牌尖
-              // 移動方向相反，所以這裡取負號
-              fanRot = Math.max(-20, Math.min(20, pStartRot - dx * 0.06));
-              applyFanRot(false);
-              var idx = cardIndexAtPoint(e.clientX, e.clientY);
-              if (idx >= 0) setHover(idx);
-            } else if (pMode === "pull" && pCard) {
+            if (pMode === "pull" && pCard) {
               var th = fanCards[pCardIdx].rot * Math.PI / 180;
               var proj = dx * Math.sin(th) + dy * Math.cos(th);
               pullDist = Math.max(0, Math.min(240, proj));
@@ -1590,7 +1579,7 @@
           pCardIdx = -1;
           pullDist = 0;
           fanEl.classList.remove("dragging");
-          if ((!e || e.type === "pointerup") && mode !== "pull" && Math.abs(rdx) < 24 && Math.abs(rdy) < 24) {
+          if ((!e || e.type === "pointerup") && (mode !== "pull" || pulled < 16) && Math.abs(rdx) < 24 && Math.abs(rdy) < 24) {
             // 輕點選牌（含手指微微滑動被誤判成 browse 的情況）：在放手時
             // 用座標直接選，不靠按鈕的 click——按下時 hover 會換 z-index，
             // 按下與放開底下的牌可能不同張，click 就會被派給父層遺失，
@@ -1608,7 +1597,7 @@
           if (mode === "pull" && card) {
             card.classList.remove("pulling");
             void card.offsetWidth;
-            if (pulled > 80) {
+            if (pulled > 64) {
               pickCard(card);
               suppressPick = true;
               setTimeout(function () { suppressPick = false; }, 250);
