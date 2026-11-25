@@ -1824,7 +1824,6 @@
           nextBtnEl.classList.add("show");
           glowPulse(true);
           sparkBurst(22, 230);
-          confetti(revealEl, 34, false);
         }
 
         var fDrag = null;
@@ -1992,7 +1991,6 @@
           turnNameEl.classList.add("swap");
           markProgress();
           setTimeout(function () { finishBarEl.classList.add("on"); }, reducedMotion ? 60 : 650);
-          if (!resuming) confetti(document.getElementById("stageFx"), 70, true);
         }
 
         document.getElementById("againBtn").addEventListener("click", function () {
